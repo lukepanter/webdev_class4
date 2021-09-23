@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_16_071512) do
+ActiveRecord::Schema.define(version: 2021_09_23_042608) do
+
+  create_table "models", force: :cascade do |t|
+    t.string "post"
+    t.integer "user_id", null: false
+    t.string "msg"
+    t.date "postDate"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_models_on_user_id"
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "msg"
+    t.date "postDate"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_posts_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email"
@@ -20,6 +39,9 @@ ActiveRecord::Schema.define(version: 2021_09_16_071512) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "address"
     t.string "postal_code"
+    t.string "password"
   end
 
+  add_foreign_key "models", "users"
+  add_foreign_key "posts", "users"
 end
