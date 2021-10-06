@@ -1,6 +1,8 @@
 class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
-
+  before_action :logged_in, except: %i[ index]
+  before_action :is_user, only: %i[ show edit update destroy ]
+  before_action :check_new, only: %i[create]
   # GET /posts or /posts.json
   def index
     @posts = Post.all
@@ -13,8 +15,10 @@ class PostsController < ApplicationController
   # GET /posts/new
   def new
     @post = Post.new
-    @post.user_id=Integer(params[:id])
-    @user=User.find(Integer(params[:id]))
+    if(params[:id] != nil)
+      @post.user_id=Integer(params[:id])
+      @user=User.find(Integer(params[:id]))
+    end
   end
 
   # GET /posts/1/edit
@@ -59,6 +63,30 @@ class PostsController < ApplicationController
   end
 
   private
+    def logged_in
+      if(session[:user_id])
+        return true
+      else
+        redirect_to main_path, notice: "Please login."
+      end
+    end
+
+    def is_user
+      if(session[:user_id] != @post.user_id)
+        redirect_to main_path, notice: "Log in with wrong user"
+      else
+        return true
+      end
+    end
+
+    def check_new
+      if(session[:user_id] != Integer(post_params["user_id"]))
+        redirect_to main_path, notice: "Log in with wrong user"
+      else
+        return true
+      end
+    end
+      
     # Use callbacks to share common setup or constraints between actions.
     def set_post
       @post = Post.find(params[:id])

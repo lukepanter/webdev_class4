@@ -16,4 +16,4 @@
 </p>
 <% user = User.find_by id: @post.user_id %>
 <%= link_to 'Edit', edit_post_path(@post) %> |
-<%= link_to 'Back', "/nmain?email=#{user.email}&password=#{user.password}" %>
+<%= link_to 'Back', "/nmain?email=#{user.email}&status=1" %>

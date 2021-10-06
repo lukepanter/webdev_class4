@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :logged_in, except: %i[ index main nmain new create]
+  before_action :is_user, only: %i[ show edit update destroy ]
   @fLogin = false 
 
   # GET /users or /users.json
@@ -66,6 +68,7 @@ class UsersController < ApplicationController
   end
 
   def main
+    session[:user_id] = nil
     if @fLogin
       @user = User.find_by(email: @email)
     else
@@ -76,10 +79,12 @@ class UsersController < ApplicationController
   def nmain
     @email = params[:email]
     @password =params[:password]
+    status = params[:status]
     @user = User.find_by(email: @email)
     respond_to do |format|
       if @user != nil 
-        if @user.password == @password
+        if @user.authenticate(@password) || status = "1"
+          session[:user_id] = @user.id
           format.html { render :showUser, notice: "User was successfully updated." }
           format.json { render :showUser, status: :ok, location: @user }
         else 
@@ -100,6 +105,21 @@ class UsersController < ApplicationController
   end 
 
   private
+    def logged_in
+      if(session[:user_id])
+        return true
+      else
+        redirect_to main_path, notice: "Please login."
+      end
+    end
+
+    def is_user
+      if(session[:user_id] != @user.id)
+        redirect_to main_path, notice: "Log in with wrong user"
+      else
+        return true
+      end
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_user
       @user = User.find(params[:id])

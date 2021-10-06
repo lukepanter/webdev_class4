@@ -15,4 +15,4 @@
   <%= @post.postDate %>
 </p>
 <% user = User.find_by id: @post.user_id %>
-<%= link_to 'Back', "/nmain?email=#{user.email}&password=#{user.password}" %>
+<%= link_to 'Back', "/nmain?email=#{user.email}&status=1" %>
